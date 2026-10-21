@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VendorVerse | Inventory & E-Commerce</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="brand" onclick="goHome()">Vendor<span>Verse</span></a>
+    <div id="headerInfo">Smart Inventory & E-Commerce</div>
+    <button id="logoutBtn" class="btn secondary hidden" onclick="logout()">Logout</button>
+  </header>
+
+  <main class="container">
+    <section id="rolePage" class="hero">
+      <p class="eyebrow">ONE PLATFORM · THREE ROLES</p>
+      <h1>Welcome to VendorVerse</h1>
+      <p>Shop smarter. Manage inventory. Keep every warehouse connected.</p>
+      <div class="role-grid">
+        <button class="role-card" onclick="chooseRole('customer')">
+          <span class="role-icon">🛍️</span>
+          <h2>Customer</h2>
+          <p>Browse products and track your orders.</p>
+          <span>Continue →</span>
+        </button>
+        <button class="role-card" onclick="chooseRole('vendor')">
+          <span class="role-icon">🏪</span>
+          <h2>Vendor</h2>
+          <p>Manage your products and request restocking.</p>
+          <span>Continue →</span>
+        </button>
+        <button class="role-card" onclick="chooseRole('manager')">
+          <span class="role-icon">📦</span>
+          <h2>Inventory Manager</h2>
+          <p>Monitor warehouses and manage stock.</p>
+          <span>Continue →</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="loginPage" class="panel narrow hidden">
+      <button class="text-button" onclick="goHome()">← Back to roles</button>
+      <p class="eyebrow">WELCOME BACK</p>
+      <h1 id="loginTitle">Login</h1>
+      <p id="loginDescription">Enter your details to continue.</p>
+
+      <form id="loginForm">
+        <label for="loginName">Name</label>
+        <input id="loginName" placeholder="Enter your name" required>
+
+        <div id="vendorField" class="hidden">
+          <label for="vendorSelect">Select Your Vendor</label>
+          <select id="vendorSelect" required>
+            <option value="TechWorld">TechWorld</option>
+            <option value="SoundHub">SoundHub</option>
+            <option value="DeskPlus">DeskPlus</option>
+            <option value="HomeNest">HomeNest</option>
+            <option value="CarryMate">CarryMate</option>
+          </select>
+        </div>
+
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password"
+               placeholder="Enter any demo password" required>
+
+        <p class="muted small">Demo only: any non-empty password works.</p>
+        <button class="btn primary full" type="submit">Login to Dashboard</button>
+        <p id="loginMessage" class="message"></p>
+      </form>
+    </section>
+
+    <section id="customerPage" class="hidden">
+      <div class="welcome-row">
+        <div>
+          <p class="eyebrow">CUSTOMER PORTAL</p>
+          <h1>Hello, <span id="customerName"></span>!</h1>
+          <p class="muted">Find your next favourite product.</p>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" onclick="customerTab('shop')">Shop</button>
+        <button class="tab" onclick="customerTab('cart')">Cart <span id="cartCount">0</span></button>
+        <button class="tab" onclick="customerTab('orders')">My Orders</button>
+      </nav>
+
+      <div id="customerShop">
+        <div class="section-heading">
+          <div>
+            <h2>Explore Products</h2>
+            <p class="muted">Select a product to see its details and order options.</p>
+          </div>
+          <input id="productSearch" class="search" placeholder="Search products..."
+                 oninput="renderProducts()">
+        </div>
+        <div id="productGrid" class="product-grid"></div>
+      </div>
+
+      <div id="customerCart" class="hidden">
+        <h2>Your Shopping Cart</h2>
+        <div id="cartContents"></div>
+        <div id="cartSummary"></div>
+      </div>
+
+      <div id="customerOrders" class="hidden">
+        <h2>My Orders & Shipment Tracking</h2>
+        <div id="customerOrderList"></div>
+      </div>
+    </section>
+
+    <section id="vendorPage" class="hidden">
+      <div class="welcome-row">
+        <div>
+          <p class="eyebrow">VENDOR PORTAL</p>
+          <h1 id="vendorHeading">Vendor Dashboard</h1>
+          <p class="muted">Manage your products, stock and restocking.</p>
+        </div>
+        <div class="vendor-chip">🏪 <span id="vendorBadge"></span></div>
+      </div>
+
+      <div id="vendorStats" class="stats-grid"></div>
+
+      <div class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>My Inventory</h2>
+            <p class="muted">Only products belonging to your selected vendor.</p>
+          </div>
+          <input id="vendorSearch" class="search" placeholder="Search my products..."
+                 oninput="renderVendor()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Product</th><th>Warehouse</th><th>Stock</th>
+                  <th>Reorder Level</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="vendorInventory"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>My Restock Requests</h2>
+        <p class="muted">Track approval and goods receipt status.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Request</th><th>Product</th><th>Quantity</th>
+                  <th>Date</th><th>Status</th></tr>
+            </thead>
+            <tbody id="vendorRequests"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Orders for My Products</h2>
+        <div id="vendorOrders"></div>
+      </div>
+    </section>
+
+    <section id="managerPage" class="hidden">
+      <div class="welcome-row">
+        <div>
+          <p class="eyebrow">CONTROL CENTRE</p>
+          <h1>Inventory Manager</h1>
+          <p class="muted">Monitor inventory across all vendors and warehouses.</p>
+        </div>
+      </div>
+
+      <div id="managerStats" class="stats-grid"></div>
+
+      <div class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>All Inventory</h2>
+            <p class="muted">Review stock and record adjustments.</p>
+          </div>
+          <div class="filter-row">
+            <input id="managerSearch" class="search" placeholder="Search inventory..."
+                   oninput="renderManager()">
+            <select id="managerStockFilter" onchange="renderManager()">
+              <option value="All">All stock</option>
+              <option value="Low">Low stock</option>
+              <option value="Out">Out of stock</option>
+              <option value="Healthy">Healthy stock</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Product</th><th>Vendor</th><th>Warehouse</th>
+                  <th>Stock</th><th>Reorder Level</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="managerInventory"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Restock Requests</h2>
+        <p class="muted">Approval does not increase stock. Record receipt after goods arrive.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Request</th><th>Vendor</th><th>Product</th>
+                  <th>Requested</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="managerRequests"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Stock Movement History</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Product</th><th>Change</th><th>Reason</th></tr></thead>
+            <tbody id="stockHistory"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="productModal" class="modal hidden" onclick="closeModalOutside(event, 'productModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('productModal')">×</button>
+      <div id="productDetails"></div>
+    </div>
+  </div>
+
+  <div id="checkoutModal" class="modal hidden" onclick="closeModalOutside(event, 'checkoutModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('checkoutModal')">×</button>
+      <h2>Checkout</h2>
+      <p class="muted">Enter your delivery details.</p>
+      <form id="checkoutForm">
+        <label for="deliveryAddress">Delivery Address</label>
+        <textarea id="deliveryAddress" required placeholder="House, street, city, PIN code"></textarea>
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod">
+          <option>Cash on Delivery</option>
+          <option>UPI (demo)</option>
+          <option>Card (demo)</option>
+        </select>
+        <div id="checkoutSummary" class="checkout-summary"></div>
+        <button class="btn primary full" type="submit">Place Order</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="restockModal" class="modal hidden" onclick="closeModalOutside(event, 'restockModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('restockModal')">×</button>
+      <h2>Request Restock</h2>
+      <p id="restockProductName" class="muted"></p>
+      <form id="restockForm">
+        <label for="restockQuantity">Quantity requested</label>
+        <input id="restockQuantity" type="number" min="1" required>
+        <label for="restockNote">Note (optional)</label>
+        <textarea id="restockNote" placeholder="Why is restocking needed?"></textarea>
+        <button class="btn primary full" type="submit">Submit Request</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="adjustModal" class="modal hidden" onclick="closeModalOutside(event, 'adjustModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('adjustModal')">×</button>
+      <h2>Adjust Stock</h2>
+      <p id="adjustProductName" class="muted"></p>
+      <form id="adjustForm">
+        <label for="adjustQuantity">Quantity change (+ or -)</label>
+        <input id="adjustQuantity" type="number" required placeholder="Example: 5 or -2">
+        <label for="adjustReason">Reason for adjustment</label>
+        <textarea id="adjustReason" required placeholder="Explain the stock adjustment"></textarea>
+        <button class="btn primary full" type="submit">Save Adjustment</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="script.js"></script>
+</body>
+</html>
